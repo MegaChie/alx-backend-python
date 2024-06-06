@@ -4,5 +4,5 @@ import math
 
 
 def floor(n: float) -> int:
-    """type-annotated function that returns the floor of a float"""
+    """Type-annotated function that returns the floor of a float"""
     return math.floor(n)
