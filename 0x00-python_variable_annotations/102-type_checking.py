@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+"""Task 12"""
 from typing import Tuple, List
 
 
 def zoom_array(lst: Tuple, factor: int = 2) -> List:
+    """Function defined in the project's last mandatory task"""
     zoomed_in: List = [
         item for item in lst
         for i in range(factor)
