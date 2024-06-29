@@ -48,3 +48,22 @@ class TestGetJson(unittest.TestCase):
         res = get_json(test_url)
         self.assertEqual(res, test_payload)
         moke_requests_get.assert_called_once_with(test_url)
+
+
+class TestMemoize(unittest.TestCase):
+    """Test class to do test multiple functions"""
+    def test_memoize(self):
+        """Tests that the method returns what it is supposed to"""
+        class TestClass:
+
+            def a_method(self):
+                return 42
+
+            @memoize
+            def a_property(self):
+                return self.a_method()
+        with patch.object(TestClass, 'a_method') as mock_object:
+            test = TestClass()
+            test.a_property()
+            test.a_property()
+            mock_object.assert_called_once()
