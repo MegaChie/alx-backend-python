@@ -25,7 +25,6 @@ class TestGithubOrgClient(unittest.TestCase):
             "https://api.github.com/orgs/{}".format(ORG_URL)
                                            )
 
-
     def test_public_repos_url(self) -> None:
         """Tests that the method returns what it is supposed to"""
         with patch("client.GithubOrgClient.org",
