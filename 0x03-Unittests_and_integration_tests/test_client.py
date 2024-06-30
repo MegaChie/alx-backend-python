@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 """Project Unittests and Integration Tests"""
-import unittest
-from typing import Dict
-from unittest.mock import MagicMock, Mock, PropertyMock, patch
-from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
+from parameterized import parameterized, parameterized_class
+from typing import Dict
+import unittest
+from unittest.mock import MagicMock, Mock, PropertyMock, patch
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -105,6 +106,40 @@ class TestGithubOrgClient(unittest.TestCase):
                            ])
     def test_has_license(self, repo: Dict,
                          license_key: str, expected: bool) -> None:
+        """Tests that the method returns what it is supposed to"""
         gh_org_client = GithubOrgClient("google")
         client_has_licence = gh_org_client.has_license(repo, license_key)
         self.assertEqual(client_has_licence, expected)
+
+
+@parameterized_class([
+    {
+        "org_payload": TEST_PAYLOAD[0][0],
+        "repos_payload": TEST_PAYLOAD[0][1],
+        "expected_repos": TEST_PAYLOAD[0][2],
+        "apache2_repos": TEST_PAYLOAD[0][3],
+    },
+])
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """Test class to do test multiple functions"""
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Tests that the method returns what it is supposed to"""
+        route_payload = {
+            "https://api.github.com/orgs/google": cls.org_payload,
+            "https://api.github.com/orgs/google/repos": cls.repos_payload,
+        }
+
+        def get_payload(url):
+            """Helper function"""
+            if url in route_payload:
+                return Mock(**{"json.return_value": route_payload[url]})
+            return HTTPError
+
+        cls.get_patcher = patch("requests.get", side_effect=get_payload)
+        cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Tear down function"""
+        cls.get_patcher.stop()
